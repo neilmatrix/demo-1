@@ -1,0 +1,14 @@
+artifact_uri: /mlflow/mlruns/628639409027627536/27632a1bdc9649a28fb20cfab2696622/artifacts
+end_time: 1751980135917
+entry_point_name: ''
+experiment_id: '628639409027627536'
+lifecycle_stage: active
+run_id: 27632a1bdc9649a28fb20cfab2696622
+run_name: blushing-quail-187
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1751980085133
+status: 3
+tags: []
+user_id: root

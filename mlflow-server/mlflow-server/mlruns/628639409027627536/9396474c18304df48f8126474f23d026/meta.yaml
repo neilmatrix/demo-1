@@ -1,0 +1,14 @@
+artifact_uri: /mlflow/mlruns/628639409027627536/9396474c18304df48f8126474f23d026/artifacts
+end_time: 1752665380815
+entry_point_name: ''
+experiment_id: '628639409027627536'
+lifecycle_stage: active
+run_id: 9396474c18304df48f8126474f23d026
+run_name: abrasive-rook-116
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1752665322846
+status: 3
+tags: []
+user_id: root

@@ -1,0 +1,14 @@
+artifact_uri: /mlflow/mlruns/628639409027627536/95dedf4695b5428dae78119ef69874fe/artifacts
+end_time: 1751980052484
+entry_point_name: ''
+experiment_id: '628639409027627536'
+lifecycle_stage: active
+run_id: 95dedf4695b5428dae78119ef69874fe
+run_name: gregarious-hawk-285
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1751979993526
+status: 3
+tags: []
+user_id: root

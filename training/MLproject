@@ -1,0 +1,13 @@
+name: mnist-classifier
+
+docker_env:
+  image: mnist-training:latest
+
+entry_points:
+  train:
+    parameters:
+      lr: {type: float, default: 0.001}
+      epochs: {type: int, default: 5}
+      batch_size: {type: int, default: 64}
+    command: >
+      python src/train.py --lr {lr} --epochs {epochs} --batch_size {batch_size}

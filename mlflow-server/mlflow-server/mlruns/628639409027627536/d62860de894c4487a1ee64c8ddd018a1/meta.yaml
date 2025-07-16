@@ -1,0 +1,14 @@
+artifact_uri: /mlflow/mlruns/628639409027627536/d62860de894c4487a1ee64c8ddd018a1/artifacts
+end_time: 1752666113379
+entry_point_name: ''
+experiment_id: '628639409027627536'
+lifecycle_stage: active
+run_id: d62860de894c4487a1ee64c8ddd018a1
+run_name: classy-roo-198
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1752666057084
+status: 3
+tags: []
+user_id: root

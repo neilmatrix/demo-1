@@ -1,0 +1,6 @@
+artifact_location: /mlflow/mlruns/628639409027627536
+creation_time: 1751979993482
+experiment_id: '628639409027627536'
+last_update_time: 1751979993482
+lifecycle_stage: active
+name: mnist-classifier

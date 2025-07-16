@@ -1,0 +1,55 @@
+name: MLflow Training Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  build-and-train:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:20.10.16-dind
+        privileged: true
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Create Docker Network
+        run: |
+          docker network create mlflow-net || echo "Network already exists"
+
+      # ---------- Build and Run MLflow Server ----------
+      - name: Build MLflow Server Image
+        run: |
+          cd practice/mlflow-server
+          docker build -t mlflow-server .
+
+      - name: Run MLflow Server Container
+        run: |
+          docker run -d \
+            --name mlflow-server \
+            --network mlflow-net \
+            -p 5050:5000 \
+            -v ${{ github.workspace }}/practice/mlflow-server/mlruns:/mlflow/mlruns \
+            mlflow-server
+
+      # ---------- Build and Run Training ----------
+      - name: Build Training Image
+        run: |
+          cd practice/training
+          docker build -t mnist-training:latest .
+
+      - name: Run Training Container
+        run: |
+          docker run --rm \
+            --network mlflow-net \
+            -e MLFLOW_TRACKING_URI=http://mlflow-server:5000 \
+            mnist-training:latest
