@@ -4,22 +4,17 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
 
 jobs:
   build-and-train:
     runs-on: ubuntu-latest
 
-    services:
-      docker:
-        image: docker:20.10.16-dind
-        privileged: true
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Set up Docker
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Create Docker Network
@@ -53,3 +48,10 @@ jobs:
             --network mlflow-net \
             -e MLFLOW_TRACKING_URI=http://mlflow-server:5000 \
             mnist-training:latest
+
+      # ---------- Upload MLflow Logs ----------
+      - name: Upload MLflow Logs as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlruns-logs
+          path: practice/mlflow-server/mlruns
