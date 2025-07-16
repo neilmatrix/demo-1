@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # Default; will be overwritten if practice/ exists
       PROJECT_ROOT: ${{ github.workspace }}
 
     steps:
@@ -18,9 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Detect Project Root (with or without practice/)
-        id: detect-root
         run: |
-          set -eux
           if [ -d "${{ github.workspace }}/practice" ]; then
             echo "PROJECT_ROOT=${{ github.workspace }}/practice" >> $GITHUB_ENV
           else
@@ -29,7 +26,6 @@ jobs:
 
       - name: Show Directory Tree (debug)
         run: |
-          set -eux
           echo "Using PROJECT_ROOT=$PROJECT_ROOT"
           ls -R $PROJECT_ROOT
 
@@ -67,9 +63,15 @@ jobs:
             -e MLFLOW_TRACKING_URI=http://mlflow-server:5000 \
             mnist-training:latest
 
-      # ---------- Upload MLflow Logs ----------
+      # ---------- Copy mlruns from MLflow container ----------
+      - name: Copy mlruns from MLflow container
+        run: |
+          docker cp mlflow-server:/mlflow/mlruns $PROJECT_ROOT/mlruns_copy
+          ls -R $PROJECT_ROOT/mlruns_copy
+
+      # ---------- Upload MLflow Logs as Artifact ----------
       - name: Upload MLflow Logs as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: mlruns-logs
-          path: ${{ env.PROJECT_ROOT }}/mlflow-server/mlruns
+          path: ${{ env.PROJECT_ROOT }}/mlruns_copy
