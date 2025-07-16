@@ -1,3 +1,180 @@
+
+# name: MLflow Training Pipeline
+
+# on:
+#   push:
+#     branches: [ main ]
+#   workflow_dispatch:
+
+# jobs:
+#   build-and-train:
+#     runs-on: ubuntu-latest
+
+#     env:
+#       # Default; will be overwritten if practice/ exists
+#       PROJECT_ROOT: ${{ github.workspace }}
+
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v4
+
+#       - name: Detect Project Root (with or without practice/)
+#         id: detect-root
+#         run: |
+#           set -eux
+#           if [ -d "${{ github.workspace }}/practice" ]; then
+#             echo "PROJECT_ROOT=${{ github.workspace }}/practice" >> $GITHUB_ENV
+#           else
+#             echo "PROJECT_ROOT=${{ github.workspace }}" >> $GITHUB_ENV
+#           fi
+
+#       - name: Show Directory Tree (debug)
+#         run: |
+#           set -eux
+#           echo "Using PROJECT_ROOT=$PROJECT_ROOT"
+#           ls -R $PROJECT_ROOT
+
+#       - name: Create Docker Network
+#         run: |
+#           docker network create mlflow-net || echo "Network already exists"
+
+#       # ---------- Build MLflow Server Image ----------
+#       - name: Build MLflow Server Image
+#         run: |
+#           docker build -t mlflow-server -f $PROJECT_ROOT/mlflow-server/Dockerfile $PROJECT_ROOT/mlflow-server
+
+#       - name: Ensure mlruns dir exists
+#         run: |
+#           mkdir -p $PROJECT_ROOT/mlflow-server/mlruns
+
+#       - name: Run MLflow Server Container
+#         run: |
+#           docker run -d \
+#             --name mlflow-server \
+#             --network mlflow-net \
+#             -p 5050:5000 \
+#             -v $PROJECT_ROOT/mlflow-server/mlruns:/mlflow/mlruns \
+#             mlflow-server
+
+#       # ---------- Build Training Image ----------
+#       - name: Build Training Image
+#         run: |
+#           docker build -t mnist-training:latest -f $PROJECT_ROOT/training/Dockerfile $PROJECT_ROOT/training
+
+#       - name: Run Training Container
+#         run: |
+#           docker run --rm \
+#             --network mlflow-net \
+#             -e MLFLOW_TRACKING_URI=http://mlflow-server:5000 \
+#             mnist-training:latest
+
+#       # ---------- Upload MLflow Logs ----------
+#       - name: Upload MLflow Logs as Artifact
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: mlruns-logs
+#           path: ${{ env.PROJECT_ROOT }}/mlflow-server/mlruns
+
+
+
+
+
+
+
+
+
+
+
+
+# name: MLflow Training Pipeline
+
+# on:
+#   push:
+#     branches: [ main ]
+#   workflow_dispatch:
+
+# jobs:
+#   build-and-train:
+#     runs-on: ubuntu-latest
+
+#     env:
+#       PROJECT_ROOT: ${{ github.workspace }}
+
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v4
+
+#       - name: Detect Project Root (with or without practice/)
+#         run: |
+#           if [ -d "${{ github.workspace }}/practice" ]; then
+#             echo "PROJECT_ROOT=${{ github.workspace }}/practice" >> $GITHUB_ENV
+#           else
+#             echo "PROJECT_ROOT=${{ github.workspace }}" >> $GITHUB_ENV
+#           fi
+
+#       - name: Show Directory Tree (debug)
+#         run: |
+#           echo "Using PROJECT_ROOT=$PROJECT_ROOT"
+#           ls -R $PROJECT_ROOT
+
+#       - name: Create Docker Network
+#         run: |
+#           docker network create mlflow-net || echo "Network already exists"
+
+#       # ---------- Build MLflow Server Image ----------
+#       - name: Build MLflow Server Image
+#         run: |
+#           docker build -t mlflow-server -f $PROJECT_ROOT/mlflow-server/Dockerfile $PROJECT_ROOT/mlflow-server
+
+#       - name: Ensure mlruns dir exists
+#         run: |
+#           mkdir -p $PROJECT_ROOT/mlflow-server/mlruns
+
+#       - name: Run MLflow Server Container
+#         run: |
+#           docker run -d \
+#             --name mlflow-server \
+#             --network mlflow-net \
+#             -p 5050:5000 \
+#             -v $PROJECT_ROOT/mlflow-server/mlruns:/mlflow/mlruns \
+#             mlflow-server
+
+#       # ---------- Build Training Image ----------
+#       - name: Build Training Image
+#         run: |
+#           docker build -t mnist-training:latest -f $PROJECT_ROOT/training/Dockerfile $PROJECT_ROOT/training
+
+#       - name: Run Training Container
+#         run: |
+#           docker run --rm \
+#             --network mlflow-net \
+#             -e MLFLOW_TRACKING_URI=http://mlflow-server:5000 \
+#             mnist-training:latest
+
+#       # ---------- Copy mlruns from MLflow container ----------
+#       - name: Copy mlruns from MLflow container
+#         run: |
+#           docker cp mlflow-server:/mlflow/mlruns $PROJECT_ROOT/mlruns_copy
+#           ls -R $PROJECT_ROOT/mlruns_copy
+
+#       # ---------- Upload MLflow Logs as Artifact ----------
+#       - name: Upload MLflow Logs as Artifact
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: mlruns-logs
+#           path: ${{ env.PROJECT_ROOT }}/mlruns_copy
+
+
+
+
+
+
+
+
+
+
+
+
 name: MLflow Training Pipeline
 
 on:
@@ -27,7 +204,7 @@ jobs:
       - name: Show Directory Tree (debug)
         run: |
           echo "Using PROJECT_ROOT=$PROJECT_ROOT"
-          ls -R $PROJECT_ROOT
+          ls -R "$PROJECT_ROOT"
 
       - name: Create Docker Network
         run: |
@@ -36,11 +213,11 @@ jobs:
       # ---------- Build MLflow Server Image ----------
       - name: Build MLflow Server Image
         run: |
-          docker build -t mlflow-server -f $PROJECT_ROOT/mlflow-server/Dockerfile $PROJECT_ROOT/mlflow-server
+          docker build -t mlflow-server -f "$PROJECT_ROOT/mlflow-server/Dockerfile" "$PROJECT_ROOT/mlflow-server"
 
-      - name: Ensure mlruns dir exists
+      - name: Ensure mlflow server dir exists
         run: |
-          mkdir -p $PROJECT_ROOT/mlflow-server/mlruns
+          mkdir -p "$PROJECT_ROOT/mlflow-server/mlruns"
 
       - name: Run MLflow Server Container
         run: |
@@ -48,13 +225,18 @@ jobs:
             --name mlflow-server \
             --network mlflow-net \
             -p 5050:5000 \
-            -v $PROJECT_ROOT/mlflow-server/mlruns:/mlflow/mlruns \
-            mlflow-server
+            -v "$PROJECT_ROOT/mlflow-server/mlruns:/mlflow/mlruns" \
+            mlflow-server \
+            mlflow server \
+              --host 0.0.0.0 \
+              --port 5000 \
+              --backend-store-uri file:/mlflow/mlruns \
+              --default-artifact-root file:/mlflow/mlruns
 
       # ---------- Build Training Image ----------
       - name: Build Training Image
         run: |
-          docker build -t mnist-training:latest -f $PROJECT_ROOT/training/Dockerfile $PROJECT_ROOT/training
+          docker build -t mnist-training:latest -f "$PROJECT_ROOT/training/Dockerfile" "$PROJECT_ROOT/training"
 
       - name: Run Training Container
         run: |
@@ -63,15 +245,22 @@ jobs:
             -e MLFLOW_TRACKING_URI=http://mlflow-server:5000 \
             mnist-training:latest
 
-      # ---------- Copy mlruns from MLflow container ----------
-      - name: Copy mlruns from MLflow container
+      # ---------- Copy mlruns out (always run, even if training fails) ----------
+      - name: Copy MLflow data from container
+        if: always()
         run: |
-          docker cp mlflow-server:/mlflow/mlruns $PROJECT_ROOT/mlruns_copy
-          ls -R $PROJECT_ROOT/mlruns_copy
+          rm -rf "$PROJECT_ROOT/mlflow_bundle"
+          mkdir -p "$PROJECT_ROOT/mlflow_bundle"
+          # copy container's /mlflow/mlruns into bundle/mlruns (gives top-level mlruns/)
+          docker cp mlflow-server:/mlflow/mlruns "$PROJECT_ROOT/mlflow_bundle/mlruns"
+          echo "Listing exported mlruns bundle:"
+          ls -R "$PROJECT_ROOT/mlflow_bundle"
 
-      # ---------- Upload MLflow Logs as Artifact ----------
+      # ---------- Upload Artifact ----------
       - name: Upload MLflow Logs as Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: mlruns-logs
-          path: ${{ env.PROJECT_ROOT }}/mlruns_copy
+          path: ${{ env.PROJECT_ROOT }}/mlflow_bundle
+
