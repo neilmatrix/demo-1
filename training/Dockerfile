@@ -19,4 +19,4 @@ ENV MLFLOW_TRACKING_URI=http://mlflow-server:5000
 
 
 # Optional: default command, if you want
-CMD ["python", "src/train.py", "--lr", "0.01", "--epochs", "5", "--batch_size", "64"]
+CMD ["python", "src/train.py", "--lr", "0.1", "--epochs", "5", "--batch_size", "64"]
